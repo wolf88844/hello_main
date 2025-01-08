@@ -3,6 +3,14 @@ name = "hello_main"
 version = "0.1.0"
 edition = "2024"
 
+[workspace]
+resolver = "2"
+
+members=[
+ "cli_app"
+ ]
+
+
 [dependencies]
 anyhow = "1.0.95"
 axum = "0.8.1"
