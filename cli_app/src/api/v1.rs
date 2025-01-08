@@ -20,19 +20,19 @@ pub fn configure(state: Arc<ApplicationState>) -> Router {
             get(handlers::posts::list).with_state(state.clone()),
         )
         .route(
-            "/posts/:id",
+            "/posts/{id}",
             get(handlers::posts::get).with_state(state.clone()),
         )
         .route(
-            "/posts/:name",
+            "/posts/slug/{name}",
             get(handlers::posts::get_by_slug).with_state(state.clone()),
         )
         .route(
-            "/posts/:id",
+            "/posts/{id}",
             put(handlers::posts::update).with_state(state.clone()),
         )
         .route(
-            "/posts/:id",
+            "/posts/{id}",
             delete(handlers::posts::delete).with_state(state.clone()),
         )
         .route(
@@ -44,19 +44,19 @@ pub fn configure(state: Arc<ApplicationState>) -> Router {
             get(handlers::users::list).with_state(state.clone()),
         )
         .route(
-            "/users/:id",
+            "/users/{id}",
             get(handlers::users::get).with_state(state.clone()),
         )
         .route(
-            "/users/:name",
+            "/users/name/{name}",
             get(handlers::users::get_by_username).with_state(state.clone()),
         )
         .route(
-            "/users/:id",
+            "/users/{id}",
             put(handlers::users::update).with_state(state.clone()),
         )
         .route(
-            "/users/:id",
+            "/users/{id}",
             delete(handlers::users::delete).with_state(state.clone()),
         )
 }
