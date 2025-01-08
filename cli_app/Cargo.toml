@@ -5,7 +5,9 @@ edition = "2024"
 
 [dependencies]
 anyhow = "1.0.95"
+axum = "0.8.1"
 clap = "4.5.24"
 config = "0.15.4"
 dotenv = "0.15.0"
 serde ={version= "1.0.217",features=["derive"]}
+tokio = {version="1.42.0",features=["full"]}

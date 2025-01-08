@@ -8,7 +8,7 @@ pub fn configure() -> Command {
     Command::new(COMMAND_NAME).about("Hello world!")
 }
 
-pub fn handle(_matches: &ArgMatches,_settings:&Settings) -> anyhow::Result<()> {
+pub fn handle(_matches: &ArgMatches, _settings: &Settings) -> anyhow::Result<()> {
     println!("Hello world!");
     Ok(())
 }

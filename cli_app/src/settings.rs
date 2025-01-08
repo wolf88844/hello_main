@@ -34,10 +34,11 @@ pub struct Settings {
 impl Settings {
     pub fn new(location: Option<&str>, env_prefix: &str) -> anyhow::Result<Self> {
         let mut builder = Config::builder();
-        if let Some(location)=location{
+        if let Some(location) = location {
             builder = builder.add_source(File::with_name(location));
         }
-        let s = builder.add_source(
+        let s = builder
+            .add_source(
                 Environment::with_prefix(env_prefix)
                     .separator("__")
                     .prefix_separator("__"),

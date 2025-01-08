@@ -250,10 +250,12 @@ name = "cli_app"
 version = "0.1.0"
 dependencies = [
  "anyhow",
+ "axum",
  "clap",
  "config",
  "dotenv",
  "serde",
+ "tokio",
 ]
 
 [[package]]
