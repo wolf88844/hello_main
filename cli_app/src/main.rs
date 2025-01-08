@@ -1,7 +1,6 @@
 use clap::{Arg, Command};
-use cli_app::commands;
+use cli_app::{commands, Settings};
 use dotenv::dotenv;
-mod settings;
 
 pub fn main() -> anyhow::Result<()> {
     dotenv().ok();
@@ -22,7 +21,7 @@ pub fn main() -> anyhow::Result<()> {
         .map(|s| s.as_str())
         .unwrap_or("");
 
-    let settings = settings::Settings::new(Some(config_location),"APP")?;
+    let settings = Settings::new(Some(config_location),"APP")?;
 
     //println!("db url:{}",settings.database.url.unwrap_or("missing database url".to_string()));
 
