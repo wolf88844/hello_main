@@ -16,7 +16,7 @@ pub fn configure(state: Arc<ApplicationState>) -> Router {
             post(handlers::posts::create).with_state(state.clone()),
         )
         .route(
-            "/post",
+            "/posts",
             get(handlers::posts::list).with_state(state.clone()),
         )
         .route(
@@ -59,4 +59,6 @@ pub fn configure(state: Arc<ApplicationState>) -> Router {
             "/users/{id}",
             delete(handlers::users::delete).with_state(state.clone()),
         )
+        .route("/login", post(handlers::login::login))
+        .with_state(state.clone())
 }
