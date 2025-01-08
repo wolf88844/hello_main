@@ -50,7 +50,7 @@ pub trait PostService {
     async fn get_post_by_id(&self, id: i64) -> anyhow::Result<Post>;
     async fn get_post_by_slug(&self, name: &str) -> anyhow::Result<Post>;
     async fn create_post(&self, req: CreatePostRequest) -> anyhow::Result<Post>;
-    async fn update_post(&self, req: UpdatePostRequest) -> anyhow::Result<Post>;
+    async fn update_post(&self, id: i64, req: UpdatePostRequest) -> anyhow::Result<Post>;
     async fn delete_post(&self, id: i64) -> anyhow::Result<()>;
 }
 
@@ -102,11 +102,11 @@ impl PostService for InMemoryPostService {
         }
     }
 
-    async fn update_post(&self, req: UpdatePostRequest) -> anyhow::Result<Post> {
+    async fn update_post(&self, id: i64, req: UpdatePostRequest) -> anyhow::Result<Post> {
         let mut data = self.data.lock().await;
         let post = data
             .items
-            .get_mut(&req.id)
+            .get_mut(&id)
             .ok_or(anyhow::bail!("Post not found: {}", req.id))?;
         post.slug = req.slug;
         post.title = req.title;

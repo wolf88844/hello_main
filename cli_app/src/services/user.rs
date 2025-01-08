@@ -98,8 +98,11 @@ impl UserService for InMemoryUserService {
 
     async fn update_user(&self, request: UpdateUserRequest) -> anyhow::Result<User> {
         let mut data = self.data.lock().await;
-        let user = data.items.get_mut(&request.id).ok_or(anyhow::bail!("User not found:{}", request.id))?;
-        
+        let user = data
+            .items
+            .get_mut(&request.id)
+            .ok_or(anyhow::bail!("User not found:{}", request.id))?;
+
         let last_login = user.last_login.clone();
 
         user.username = request.username;
