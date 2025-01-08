@@ -5,6 +5,9 @@ use std::{
 
 use anyhow::Ok;
 use clap::{Arg, ArgMatches, Command, value_parser};
+use tower_http::trace::TraceLayer;
+use tracing::{Level, level_filters::LevelFilter};
+use tracing_subscriber::{fmt, layer::SubscriberExt, util::SubscriberInitExt};
 
 use crate::{settings::Settings, state::ApplicationState};
 
@@ -38,8 +41,14 @@ fn start_tokio(port: u16, settings: &Settings) -> anyhow::Result<()> {
         .enable_all()
         .build()?
         .block_on(async move {
+            let subscriber = tracing_subscriber::registry()
+                .with(LevelFilter::from_level(Level::TRACE))
+                .with(fmt::Layer::default());
+
+            subscriber.init();
+
             let state = Arc::new(ApplicationState::new(settings)?);
-            let router = crate::api::configure(state);
+            let router = crate::api::configure(state).layer(TraceLayer::new_for_http());
             let addr = SocketAddr::new(IpAddr::V4(Ipv4Addr::new(0, 0, 0, 0)), port);
             let listener = tokio::net::TcpListener::bind(addr).await?;
             axum::serve(listener, router.into_make_service()).await?;
