@@ -1,16 +1,13 @@
 use anyhow::Context;
 use axum::{http::StatusCode, response::IntoResponse, routing::get, Json, Router};
-use hello_main::Setting;
 use serde::Serialize;
 
 #[tokio::main]
 async fn main() -> anyhow::Result<()> {
-    let setting = Setting::new();
     let app = Router::new()
         .route("/", get(hello))
         .layer(tower_http::catch_panic::CatchPanicLayer::new());
-    let port = setting.get_port();
-    let addr = format!("0.0.0.0:{}", port);
+    let addr = format!("0.0.0.0:{}", 3000);
     let listener = tokio::net::TcpListener::bind(addr)
         .await
         .context("failed to bind to port")?;
