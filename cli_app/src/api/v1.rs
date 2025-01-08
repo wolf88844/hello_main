@@ -35,4 +35,28 @@ pub fn configure(state: Arc<ApplicationState>) -> Router {
             "/posts/:id",
             delete(handlers::posts::delete).with_state(state.clone()),
         )
+        .route(
+            "/users",
+            post(handlers::users::create).with_state(state.clone()),
+        )
+       .route(
+            "/users",
+            get(handlers::users::list).with_state(state.clone()),
+        )
+        .route(
+            "/users/:id",
+            get(handlers::users::get).with_state(state.clone()),
+        )
+       .route(
+            "/users/:name",
+            get(handlers::users::get_by_username).with_state(state.clone()),
+       )
+       .route(
+            "/users/:id",
+            put(handlers::users::update).with_state(state.clone()),
+        )
+       .route(
+            "/users/:id",
+            delete(handlers::users::delete).with_state(state.clone()),
+        )
 }

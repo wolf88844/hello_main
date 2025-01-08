@@ -1,7 +1,9 @@
 use std::sync::Arc;
 
 use axum::{
-    extract::{Path, State}, http::StatusCode, Json
+    Json,
+    extract::{Path, State},
+    http::StatusCode,
 };
 use serde::Serialize;
 
@@ -54,14 +56,13 @@ pub async fn get(
     Path(id): Path<i64>,
 ) -> Result<Json<SinglePostResponse>, AppError> {
     let post = state.post_service.get_post_by_id(id).await;
-    match post{
-        Ok(post)=>{
+    match post {
+        Ok(post) => {
             let response = SinglePostResponse { data: post };
             Ok(Json(response))
         }
-        Err(e)=>Err(AppError::from((StatusCode::NOT_FOUND,e))),
+        Err(e) => Err(AppError::from((StatusCode::NOT_FOUND, e))),
     }
-    
 }
 
 pub async fn get_by_slug(
@@ -69,12 +70,12 @@ pub async fn get_by_slug(
     Path(name): Path<String>,
 ) -> Result<Json<SinglePostResponse>, AppError> {
     let post = state.post_service.get_post_by_slug(&name).await;
-    match post{
-        Ok(post)=>{
+    match post {
+        Ok(post) => {
             let response = SinglePostResponse { data: post };
             Ok(Json(response))
         }
-        Err(e)=>Err(AppError::from((StatusCode::NOT_FOUND,e))),
+        Err(e) => Err(AppError::from((StatusCode::NOT_FOUND, e))),
     }
 }
 

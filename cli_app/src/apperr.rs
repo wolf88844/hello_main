@@ -1,23 +1,20 @@
 use axum::{http::StatusCode, response::IntoResponse};
 
-pub struct AppError{
-status_code:StatusCode,
-err:anyhow::Error,
+pub struct AppError {
+    status_code: StatusCode,
+    err: anyhow::Error,
 }
 
-impl From<(StatusCode,anyhow::Error)> for AppError {
-    fn from((status_code,err):(StatusCode,anyhow::Error)) -> Self {
-        Self {
-            status_code,
-            err,
-        }
+impl From<(StatusCode, anyhow::Error)> for AppError {
+    fn from((status_code, err): (StatusCode, anyhow::Error)) -> Self {
+        Self { status_code, err }
     }
 }
 
 impl From<anyhow::Error> for AppError {
-    fn from(err:anyhow::Error) -> Self {
+    fn from(err: anyhow::Error) -> Self {
         Self {
-            status_code:StatusCode::INTERNAL_SERVER_ERROR,
+            status_code: StatusCode::INTERNAL_SERVER_ERROR,
             err,
         }
     }
