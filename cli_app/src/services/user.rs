@@ -47,7 +47,7 @@ pub trait UserService {
     async fn get_user_by_username(&self, username: &str) -> anyhow::Result<User>;
 
     async fn create_user(&self, request: CreateUserRequest) -> anyhow::Result<User>;
-    async fn update_user(&self, id:i64,request: UpdateUserRequest) -> anyhow::Result<User>;
+    async fn update_user(&self, id: i64, request: UpdateUserRequest) -> anyhow::Result<User>;
     async fn delete_user(&self, id: i64) -> anyhow::Result<()>;
 }
 
@@ -96,7 +96,7 @@ impl UserService for InMemoryUserService {
         }
     }
 
-    async fn update_user(&self, id:i64,request: UpdateUserRequest) -> anyhow::Result<User> {
+    async fn update_user(&self, id: i64, request: UpdateUserRequest) -> anyhow::Result<User> {
         let mut data = self.data.lock().await;
         let user = data
             .items
