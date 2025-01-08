@@ -1,10 +1,12 @@
-use std::net::{IpAddr, Ipv4Addr, SocketAddr};
+use std::{
+    net::{IpAddr, Ipv4Addr, SocketAddr},
+    sync::Arc,
+};
 
 use anyhow::Ok;
-use axum::Router;
 use clap::{Arg, ArgMatches, Command, value_parser};
 
-use crate::settings::Settings;
+use crate::{settings::Settings, state::ApplicationState};
 
 pub const COMMAND_NAME: &str = "serve";
 
@@ -36,9 +38,9 @@ fn start_tokio(port: u16, settings: &Settings) -> anyhow::Result<()> {
         .enable_all()
         .build()?
         .block_on(async move {
+            let state = Arc::new(ApplicationState::new(settings)?);
+            let router = crate::api::configure(state);
             let addr = SocketAddr::new(IpAddr::V4(Ipv4Addr::new(0, 0, 0, 0)), port);
-            let router = Router::new();
-
             let listener = tokio::net::TcpListener::bind(addr).await?;
             axum::serve(listener, router.into_make_service()).await?;
 
