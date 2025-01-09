@@ -1,11 +1,8 @@
 use tokio::signal;
 
-
-pub async fn shutdown_signal(){
-    let ctrl_c = async{
-        signal::ctrl_c()
-            .await
-            .expect("failed to listen for ctrl-c");
+pub async fn shutdown_signal() {
+    let ctrl_c = async {
+        signal::ctrl_c().await.expect("failed to listen for ctrl-c");
     };
 
     #[cfg(unix)]

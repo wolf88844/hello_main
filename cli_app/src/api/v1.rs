@@ -21,8 +21,9 @@ pub fn configure(state: Arc<ApplicationState>) -> Router {
         )
         .route(
             "/posts",
-            get(handlers::posts::list).with_state(state.clone())
-            .route_layer(middleware::from_fn_with_state(state.clone(), trace)),
+            get(handlers::posts::list)
+                .with_state(state.clone())
+                .route_layer(middleware::from_fn_with_state(state.clone(), trace)),
         )
         .route(
             "/posts/{id}",

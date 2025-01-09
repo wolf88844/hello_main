@@ -104,10 +104,7 @@ impl PostService for InMemoryPostService {
 
     async fn update_post(&self, id: i64, req: UpdatePostRequest) -> anyhow::Result<Post> {
         let mut data = self.data.lock().await;
-        let post = data
-            .items
-            .get_mut(&id)
-            .unwrap();
+        let post = data.items.get_mut(&id).unwrap();
         post.slug = req.slug;
         post.title = req.title;
         post.content = req.content;

@@ -1,5 +1,5 @@
 {
     "database":{
-        "url":"pgsql://"
+        "url":"postgresql://postgres:root@localhost:5432/sampledb"
     }
 }

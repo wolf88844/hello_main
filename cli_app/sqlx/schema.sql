@@ -4,8 +4,8 @@ create table users(
     username varchar(255) not null,
     password varchar(255) not null,
     status int not null default 1,
-    created timestamp default current_timestamp,
-    updated timestamp default current_timestamp,
+    created timestamp with time zone default current_timestamp,
+    updated timestamp with time zone default current_timestamp,
     last_login timestamp
 )
 
@@ -18,8 +18,8 @@ create table posts(
     title varchar(255) not null,
     content text not null,
     status int not null default 1,
-    created timestamp default current_timestamp,
-    updated timestamp default current_timestamp,
+    created timestamp with time zone default current_timestamp,
+    updated timestamp with time zone default current_timestamp,
 	foreign key (author_id) references users(id)
 )
 

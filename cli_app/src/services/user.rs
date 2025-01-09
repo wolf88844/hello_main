@@ -1,6 +1,7 @@
 use std::collections::HashMap;
 
 use serde::{Deserialize, Serialize};
+use sqlx::{Pool, Postgres};
 use tokio::sync::Mutex;
 
 use crate::{
@@ -25,6 +26,16 @@ impl Default for InMemoryUserService {
                 items: HashMap::new(),
             }),
         }
+    }
+}
+
+pub struct PgSqlUserService {
+    pub pool: Pool<Postgres>,
+}
+
+impl PgSqlUserService {
+    pub fn new(pool: Pool<Postgres>) -> Self {
+        Self { pool }
     }
 }
 
@@ -101,9 +112,7 @@ impl UserService for InMemoryUserService {
 
     async fn update_user(&self, id: i64, request: UpdateUserRequest) -> anyhow::Result<User> {
         let mut data = self.data.lock().await;
-        let user = data
-            .items
-            .get_mut(&id).unwrap();
+        let user = data.items.get_mut(&id).unwrap();
 
         let last_login = user.last_login.clone();
 
@@ -125,5 +134,133 @@ impl UserService for InMemoryUserService {
             None => anyhow::bail!("User not found:{}", id),
             Some(_) => Ok(()),
         }
+    }
+}
+
+impl UserService for PgSqlUserService {
+    async fn get_all_users(&self) -> anyhow::Result<Vec<User>> {
+        let res = sqlx::query!(
+            r#"
+            SELECT id, username, password, status, created, updated, last_login
+            FROM users
+            "#
+        );
+        res.fetch_all(&self.pool)
+            .await
+            .map(|rows| {
+                rows.into_iter()
+                    .map(|row| User {
+                        id: row.id as i64,
+                        username: row.username,
+                        password: row.password,
+                        status: UserStatus::from(row.status),
+                        created: row.created.unwrap_or_default(),
+                        updated: row.updated.unwrap_or_default(),
+                        last_login: row.last_login,
+                    })
+                    .collect()
+            })
+            .map_err(|e| anyhow::anyhow!(e))
+    }
+
+    async fn get_user_by_id(&self, id: i64) -> anyhow::Result<User> {
+        let res = sqlx::query!(
+            r#"
+            SELECT id, username, password, status, created, updated, last_login
+            FROM users
+            WHERE id = $1
+            "#,
+            id
+        );
+        res.fetch_one(&self.pool)
+            .await
+            .map(|row| User {
+                id: row.id as i64,
+                username: row.username,
+                password: row.password,
+                status: UserStatus::from(row.status),
+                created: row.created.unwrap_or_default(),
+                updated: row.updated.unwrap_or_default(),
+                last_login: row.last_login,
+            })
+            .map_err(|e| anyhow::anyhow!(e).context(format!("Failed to get user by id:{}", id)))
+    }
+
+    async fn get_user_by_username(&self, username: &str) -> anyhow::Result<User> {
+        let res = sqlx::query!(
+            r#"
+            SELECT id, username, password, status, created, updated, last_login
+            FROM users
+            WHERE username = $1
+            "#,
+            username
+        );
+        res.fetch_one(&self.pool)
+            .await
+            .map(|row| User {
+                id: row.id as i64,
+                username: row.username,
+                password: row.password,
+                status: UserStatus::from(row.status),
+                created: row.created.unwrap_or_default(),
+                updated: row.updated.unwrap_or_default(),
+                last_login: row.last_login,
+            })
+            .map_err(|e| {
+                anyhow::anyhow!(e).context(format!("Failed to get user by username:{}", username))
+            })
+    }
+
+    async fn create_user(&self, request: CreateUserRequest) -> anyhow::Result<User> {
+        let query = sqlx::query!(
+            r#"
+                insert into users(username,password,status,created,updated,last_login) 
+                values($1,$2,$3,Now(),Now(),null)
+                returning id
+            "#,
+            request.username,
+            password::encrypt_password(&request.password)?,
+            i32::from(request.status)
+        );
+
+        let res = query.fetch_one(&self.pool).await?;
+        let id: i64 = res.id as i64;
+        let user = self.get_user_by_id(id).await?;
+        Ok(user)
+    }
+
+    async fn update_user(&self, id: i64, request: UpdateUserRequest) -> anyhow::Result<User> {
+        match self.get_user_by_id(id).await {
+            Ok(user) => {
+                let query = sqlx::query!(
+                    r#"
+                        update users
+                        set username = $1, password = $2, status = $3, updated = Now(),last_login=$4 
+                        where id = $5
+                    "#,
+                    request.username,
+                    password::encrypt_password(&request.password)?,
+                    i32::from(request.status),
+                    user.updated,
+                    id
+                );
+                query.execute(&self.pool).await?;
+                let user = self.get_user_by_id(id).await?;
+                Ok(user)
+            }
+            Err(_) => anyhow::bail!("User not found,id = {}", id),
+        }
+    }
+
+    async fn delete_user(&self, id: i64) -> anyhow::Result<()> {
+        let query = sqlx::query!(
+            r#"
+                delete from users
+                where id = $1
+            "#,
+            id
+        );
+        query.execute(&self.pool).await?;
+        Ok(())
     }
 }
