@@ -4,6 +4,8 @@ use serde::{Deserialize, Serialize};
 use sqlx::{Pool, Postgres};
 use tokio::sync::Mutex;
 
+use crate::api::request::{CreateUserRequest, UpdateUserRequest};
+use crate::api::response::{ListUserResponse, SingleUserResponse};
 use crate::{
     model::{User, UserStatus},
     utils::password,
@@ -37,21 +39,6 @@ impl PgSqlUserService {
     pub fn new(pool: Pool<Postgres>) -> Self {
         Self { pool }
     }
-}
-
-#[derive(Serialize, Deserialize)]
-pub struct CreateUserRequest {
-    pub username: String,
-    pub password: String,
-    pub status: UserStatus,
-}
-
-#[derive(Serialize, Deserialize)]
-pub struct UpdateUserRequest {
-    pub id: i64,
-    pub username: String,
-    pub password: String,
-    pub status: UserStatus,
 }
 
 #[allow(async_fn_in_trait)]

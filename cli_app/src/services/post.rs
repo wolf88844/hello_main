@@ -4,6 +4,8 @@ use serde::{Deserialize, Serialize};
 use sqlx::{Pool, Postgres};
 use tokio::sync::Mutex;
 
+use crate::api::request::{CreatePostRequest, UpdatePostRequest};
+use crate::api::response::{ListPostResponse, SinglePostResponse};
 use crate::model::{Post, PostStatus};
 
 pub struct InMemoryPostStore {
@@ -34,25 +36,6 @@ impl PgSqlPostService {
     pub fn new(pool: Pool<Postgres>) -> Self {
         Self { pool }
     }
-}
-
-#[derive(Serialize, Deserialize)]
-pub struct CreatePostRequest {
-    pub author_id: i64,
-    pub title: String,
-    pub slug: String,
-    pub content: String,
-    pub status: PostStatus,
-}
-
-#[derive(Serialize, Deserialize)]
-pub struct UpdatePostRequest {
-    pub id: i64,
-    pub author_id: i64,
-    pub title: String,
-    pub slug: String,
-    pub content: String,
-    pub status: PostStatus,
 }
 
 #[allow(async_fn_in_trait)]

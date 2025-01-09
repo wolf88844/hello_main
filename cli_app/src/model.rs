@@ -1,7 +1,9 @@
 use chrono::{DateTime, Utc};
+use schemars::JsonSchema;
 use serde::{Deserialize, Serialize};
+use utoipa::ToSchema;
 
-#[derive(Copy, Clone, Serialize, Deserialize)]
+#[derive(Copy, Clone, Serialize, Deserialize, JsonSchema, ToSchema)]
 pub enum UserStatus {
     Active = 1,
     Blocked = 2,
@@ -26,7 +28,7 @@ impl From<UserStatus> for i32 {
     }
 }
 
-#[derive(Copy, Clone, Serialize, Deserialize)]
+#[derive(Copy, Clone, Serialize, Deserialize, JsonSchema, ToSchema)]
 pub enum PostStatus {
     Draft = 1,
     Published = 2,
@@ -50,7 +52,8 @@ impl From<PostStatus> for i32 {
         }
     }
 }
-#[derive(Clone, Serialize)]
+
+#[derive(Clone, Serialize, ToSchema)]
 pub struct User {
     pub id: i64,
     pub username: String,
@@ -61,7 +64,7 @@ pub struct User {
     pub last_login: Option<DateTime<Utc>>,
 }
 
-#[derive(Clone, Serialize)]
+#[derive(Clone, Serialize, ToSchema)]
 pub struct Post {
     pub id: i64,
     pub author_id: i64,

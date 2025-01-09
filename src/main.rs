@@ -1,5 +1,5 @@
 use anyhow::Context;
-use axum::{http::StatusCode, response::IntoResponse, routing::get, Json, Router};
+use axum::{Json, Router, http::StatusCode, response::IntoResponse, routing::get};
 use serde::Serialize;
 
 #[tokio::main]
@@ -17,7 +17,7 @@ async fn main() -> anyhow::Result<()> {
     Ok(())
 }
 
-async fn hello() -> Result<(StatusCode, Json<Response>),AppError> {
+async fn hello() -> Result<(StatusCode, Json<Response>), AppError> {
     let response = Response {
         message: generate_message().context("failed to generate message")?,
     };
@@ -38,13 +38,13 @@ struct Response {
 
 struct AppError(anyhow::Error);
 
-impl From<anyhow::Error> for AppError{
+impl From<anyhow::Error> for AppError {
     fn from(err: anyhow::Error) -> Self {
         Self(err)
     }
 }
 
-impl IntoResponse for AppError{
+impl IntoResponse for AppError {
     fn into_response(self) -> axum::response::Response {
         (StatusCode::INTERNAL_SERVER_ERROR, self.0.to_string()).into_response()
     }

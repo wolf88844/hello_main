@@ -14,6 +14,20 @@ use crate::{
 };
 
 use crate::utils::password;
+#[utoipa::path(
+    post,
+    path = "/login",
+    request_body = LoginRequest,
+    responses(
+        (status = 200, description = "Login successful", body = LoginResponse),
+        (status = 401, description = "Invalid credentials",),
+    ),
+    tag = "Auth",
+    operation_id = "login",
+    security(
+        ("api_key" = []),
+    ),
+)]
 pub async fn login(
     State(state): State<Arc<ApplicationState>>,
     Json(payload): Json<LoginRequest>,

@@ -7,6 +7,7 @@ use super::middleware::auth::auth;
 use super::middleware::trace::trace;
 use axum::routing::{delete, get, post, put};
 use axum::{Router, middleware};
+use utoipa::OpenApi;
 pub fn configure(state: Arc<ApplicationState>) -> Router {
     Router::new()
         .route(
@@ -68,3 +69,46 @@ pub fn configure(state: Arc<ApplicationState>) -> Router {
         .route("/login", post(handlers::login::login))
         .with_state(state.clone())
 }
+
+#[derive(OpenApi)]
+#[openapi(
+    paths(
+        handlers::hello::hello,
+        handlers::posts::create,
+        handlers::posts::list,
+        handlers::posts::get,
+        handlers::posts::get_by_slug,
+        handlers::posts::update,
+        handlers::posts::delete,
+        handlers::users::create,
+        handlers::users::list,
+        handlers::users::get,
+        handlers::users::update,
+        handlers::users::delete,
+        handlers::login::login,
+    ),
+    components(
+        schemas(
+            crate::request::post::CreatePostRequest,
+            crate::response::post::ListPostResponse,
+            crate::response::post::SinglePostResponse,
+            crate::request::post::CreatePostRequest,
+            crate::request::user::CreateUserRequest,
+            crate::response::user::ListUserResponse,
+            crate::response::user::SingleUserResponse,
+            crate::request::user::UpdateUserRequest,
+            crate::request::login::LoginRequest,
+            crate::response::login::LoginResponse,
+        )
+    ),
+    tags(
+        (name="hello",description="hello world"),
+        (name="posts",description="posts api"),
+        (name="users",description="users api"),
+        (name="login",description="login api"),
+    ),
+    servers(
+        (url="/v1",description="v1")
+    ),
+)]
+pub struct ApiDoc;

@@ -4,25 +4,23 @@ use axum::{
     Json,
     extract::{Path, State},
 };
-use serde::Serialize;
 
 use crate::{
-    apperr::AppError,
-    model::User,
-    services::user::{CreateUserRequest, UpdateUserRequest, UserService},
-    state::ApplicationState,
+    api::request::CreateUserRequest, api::request::UpdateUserRequest,
+    api::response::ListUserResponse, api::response::SingleUserResponse, apperr::AppError,
+    model::User, services::user::UserService, state::ApplicationState,
 };
 
-#[derive(Serialize)]
-pub struct ListUserResponse {
-    pub data: Vec<User>,
-}
-
-#[derive(Serialize)]
-pub struct SingleUserResponse {
-    pub data: User,
-}
-
+#[utoipa::path(
+    post,
+    path = "/users",
+    request_body = CreateUserRequest,
+    responses(
+        (status = 200, description = "User created successfully", body = SingleUserResponse),
+        (status = 400, description = "Bad request", body = AppError),
+        (status = 500, description = "Internal server error", body = AppError),
+    ),
+)]
 pub async fn create(
     State(state): State<Arc<ApplicationState>>,
     Json(payload): Json<CreateUserRequest>,
@@ -32,6 +30,14 @@ pub async fn create(
     Ok(Json(response))
 }
 
+#[utoipa::path(
+    get,
+    path = "/users",
+    responses(
+        (status = 200, description = "List of users", body = ListUserResponse),
+        (status = 500, description = "Internal server error", body = AppError),
+    ),
+)]
 pub async fn list(
     State(state): State<Arc<ApplicationState>>,
 ) -> Result<Json<ListUserResponse>, AppError> {
@@ -40,6 +46,15 @@ pub async fn list(
     Ok(Json(response))
 }
 
+#[utoipa::path(
+    get,
+    path = "/users/{id}",
+    responses(
+        (status = 200, description = "User found", body = SingleUserResponse),
+        (status = 404, description = "User not found", body = AppError),
+        (status = 500, description = "Internal server error", body = AppError),
+    ),
+)]
 pub async fn get(
     State(state): State<Arc<ApplicationState>>,
     Path(id): Path<i64>,
@@ -54,6 +69,15 @@ pub async fn get(
     }
 }
 
+#[utoipa::path(
+    get,
+    path = "/users/username/{username}",
+    responses(
+        (status = 200, description = "User found", body = SingleUserResponse),
+        (status = 404, description = "User not found", body = AppError),
+        (status = 500, description = "Internal server error", body = AppError),
+    ),
+)]
 pub async fn get_by_username(
     State(state): State<Arc<ApplicationState>>,
     Path(username): Path<String>,
@@ -68,6 +92,17 @@ pub async fn get_by_username(
     }
 }
 
+#[utoipa::path(
+    put,
+    path = "/users/{id}",
+    request_body = UpdateUserRequest,
+    responses(
+        (status = 200, description = "User updated successfully", body = SingleUserResponse),
+        (status = 400, description = "Bad request", body = AppError),
+        (status = 404, description = "User not found", body = AppError),
+        (status = 500, description = "Internal server error", body = AppError),
+    ),
+)]
 pub async fn update(
     State(state): State<Arc<ApplicationState>>,
     Path(id): Path<i64>,
@@ -78,6 +113,15 @@ pub async fn update(
     Ok(Json(response))
 }
 
+#[utoipa::path(
+    delete,
+    path = "/users/{id}",
+    responses(
+        (status = 200, description = "User deleted successfully"),
+        (status = 404, description = "User not found", body = AppError),
+        (status = 500, description = "Internal server error", body = AppError),
+    ),
+)]
 pub async fn delete(
     State(state): State<Arc<ApplicationState>>,
     Path(id): Path<i64>,

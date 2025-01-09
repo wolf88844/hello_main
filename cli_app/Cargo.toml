@@ -22,3 +22,6 @@ argon2 = {version="0.5.3"}
 tower = "0.5.2"
 rand = "0.8.5"
 sqlx = {version="0.8.3",features=["runtime-tokio","postgres","chrono","tls-rustls","macros"]}
+schemars = "0.8.21"
+utoipa = { version = "5.3.1", features = ["chrono"] }
+utoipa-swagger-ui = { version = "8.1.1", features = ["axum"] }
