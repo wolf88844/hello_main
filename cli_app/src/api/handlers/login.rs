@@ -1,6 +1,6 @@
 use std::sync::Arc;
 
-use axum::{Json, extract::State};
+use axum::{Json, extract::State, http::StatusCode};
 use jsonwebtoken::{EncodingKey, Header, encode};
 
 use crate::{
@@ -9,13 +9,39 @@ use crate::{
         response::{TokenClaims, login::LoginResponse},
     },
     apperr::AppError,
+    services::user::UserService,
     state::ApplicationState,
 };
 
+use crate::utils::password;
 pub async fn login(
     State(state): State<Arc<ApplicationState>>,
     Json(payload): Json<LoginRequest>,
 ) -> Result<Json<LoginResponse>, AppError> {
+    //查询用户
+    let user = match state
+        .user_service
+        .get_user_by_username(&payload.username)
+        .await
+    {
+        Ok(user) => user,
+        Err(_) => {
+            return Err(AppError::from((
+                StatusCode::UNAUTHORIZED,
+                anyhow::anyhow!("Invalid username or password"),
+            )));
+        }
+    };
+    //校验密码
+    let password = payload.password;
+    let encryptpassword = password::encrypt_password(&password)?;
+    if user.password != encryptpassword {
+        return Err(AppError::from((
+            StatusCode::UNAUTHORIZED,
+            anyhow::anyhow!("password error"),
+        )));
+    }
+
     let timeout = state.settings.load().token_timeout_seconds.unwrap_or(3600);
 
     let now = chrono::Utc::now();

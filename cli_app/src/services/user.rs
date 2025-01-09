@@ -3,7 +3,7 @@ use std::collections::HashMap;
 use serde::{Deserialize, Serialize};
 use tokio::sync::Mutex;
 
-use crate::model::{User, UserStatus};
+use crate::{model::{User, UserStatus}, utils::password};
 
 pub struct InmemoryUserStore {
     pub counter: i64,
@@ -82,7 +82,7 @@ impl UserService for InMemoryUserService {
         let user = User {
             id: data.counter,
             username: request.username,
-            password: request.password,
+            password: password::encrypt_password(&request.password)?,
             status: request.status,
             created: ts,
             updated: ts,
@@ -106,7 +106,7 @@ impl UserService for InMemoryUserService {
         let last_login = user.last_login.clone();
 
         user.username = request.username;
-        user.password = request.password;
+        user.password = password::encrypt_password(&request.password)?;
         user.status = request.status;
         user.updated = chrono::offset::Utc::now();
         user.last_login = last_login;

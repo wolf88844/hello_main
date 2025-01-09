@@ -5,5 +5,6 @@ pub mod model;
 pub mod services;
 pub mod settings;
 pub mod state;
+pub mod utils;
 
 pub use settings::Settings;
