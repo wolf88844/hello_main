@@ -24,6 +24,7 @@ use crate::{
         (status = 400, description = "Bad request", body = AppError),
         (status = 500, description = "Internal server error", body = AppError),
     ),
+    tag="users"
 )]
 pub async fn create(
     State(state): State<Arc<ApplicationState>>,
@@ -41,6 +42,7 @@ pub async fn create(
         (status = 200, description = "List of users", body = ListUserResponse),
         (status = 500, description = "Internal server error", body = AppError),
     ),
+    tag="users"
 )]
 pub async fn list(
     State(state): State<Arc<ApplicationState>>,
@@ -58,6 +60,7 @@ pub async fn list(
         (status = 404, description = "User not found", body = AppError),
         (status = 500, description = "Internal server error", body = AppError),
     ),
+    tag="users"
 )]
 pub async fn get(
     State(state): State<Arc<ApplicationState>>,
@@ -81,6 +84,7 @@ pub async fn get(
         (status = 404, description = "User not found", body = AppError),
         (status = 500, description = "Internal server error", body = AppError),
     ),
+    tag="users"
 )]
 pub async fn get_by_username(
     State(state): State<Arc<ApplicationState>>,
@@ -106,6 +110,7 @@ pub async fn get_by_username(
         (status = 404, description = "User not found", body = AppError),
         (status = 500, description = "Internal server error", body = AppError),
     ),
+    tag= "users",
 )]
 pub async fn update(
     State(state): State<Arc<ApplicationState>>,
@@ -125,6 +130,7 @@ pub async fn update(
         (status = 404, description = "User not found", body = AppError),
         (status = 500, description = "Internal server error", body = AppError),
     ),
+    tag= "users",
 )]
 pub async fn delete(
     State(state): State<Arc<ApplicationState>>,

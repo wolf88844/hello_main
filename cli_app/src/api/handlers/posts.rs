@@ -49,7 +49,9 @@ pub async fn create(
         (status = 400, description = "Bad request", body = AppError),
         (status = 401, description = "Unauthorized", body = AppError),
         (status =404, description = "Post not found", body = AppError),
-    )
+    ),
+    tag = "Posts",
+
 )]
 pub async fn update(
     State(state): State<Arc<ApplicationState>>,
@@ -68,7 +70,8 @@ pub async fn update(
     responses(
         (status = 200, description = "List of posts", body = ListPostResponse),
         (status = 404, description = "No posts found", body = AppError),
-    )
+    ),
+    tag = "Posts",
 )]
 pub async fn list(
     State(state): State<Arc<ApplicationState>>,
@@ -84,7 +87,8 @@ pub async fn list(
     responses(
         (status = 200, description = "Post found", body = SinglePostResponse),
         (status = 404, description = "Post not found", body = AppError),
-    )
+    ),
+    tag= "Posts",
 )]
 pub async fn get(
     State(state): State<Arc<ApplicationState>>,
@@ -106,7 +110,8 @@ pub async fn get(
     responses(
         (status = 200, description = "Post found", body = SinglePostResponse),
         (status = 404, description = "Post not found", body = AppError),
-    )
+    ),
+    tag= "Posts",
 )]
 pub async fn get_by_slug(
     State(state): State<Arc<ApplicationState>>,
@@ -128,7 +133,8 @@ pub async fn get_by_slug(
     responses(
         (status = 200, description = "Post deleted successfully"),
         (status = 404, description = "Post not found", body = AppError),
-    )
+    ),
+    tag= "Posts",
 )]
 pub async fn delete(
     State(state): State<Arc<ApplicationState>>,
