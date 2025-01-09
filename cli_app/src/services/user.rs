@@ -3,7 +3,10 @@ use std::collections::HashMap;
 use serde::{Deserialize, Serialize};
 use tokio::sync::Mutex;
 
-use crate::{model::{User, UserStatus}, utils::password};
+use crate::{
+    model::{User, UserStatus},
+    utils::password,
+};
 
 pub struct InmemoryUserStore {
     pub counter: i64,
@@ -100,8 +103,7 @@ impl UserService for InMemoryUserService {
         let mut data = self.data.lock().await;
         let user = data
             .items
-            .get_mut(&id)
-            .ok_or(anyhow::bail!("User not found:{}", request.id))?;
+            .get_mut(&id).unwrap();
 
         let last_login = user.last_login.clone();
 

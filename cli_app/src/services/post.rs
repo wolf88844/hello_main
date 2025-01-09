@@ -107,7 +107,7 @@ impl PostService for InMemoryPostService {
         let post = data
             .items
             .get_mut(&id)
-            .ok_or(anyhow::bail!("Post not found: {}", req.id))?;
+            .unwrap();
         post.slug = req.slug;
         post.title = req.title;
         post.content = req.content;

@@ -4,6 +4,7 @@ use crate::state::ApplicationState;
 
 use super::handlers;
 use super::middleware::auth::auth;
+use super::middleware::trace::trace;
 use axum::routing::{delete, get, post, put};
 use axum::{Router, middleware};
 pub fn configure(state: Arc<ApplicationState>) -> Router {
@@ -20,7 +21,8 @@ pub fn configure(state: Arc<ApplicationState>) -> Router {
         )
         .route(
             "/posts",
-            get(handlers::posts::list).with_state(state.clone()),
+            get(handlers::posts::list).with_state(state.clone())
+            .route_layer(middleware::from_fn_with_state(state.clone(), trace)),
         )
         .route(
             "/posts/{id}",

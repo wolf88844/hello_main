@@ -34,13 +34,7 @@ pub async fn login(
     };
     //校验密码
     let password = payload.password;
-    let encryptpassword = password::encrypt_password(&password)?;
-    if user.password != encryptpassword {
-        return Err(AppError::from((
-            StatusCode::UNAUTHORIZED,
-            anyhow::anyhow!("password error"),
-        )));
-    }
+    password::validate_password(&password, &user.password)?;
 
     let timeout = state.settings.load().token_timeout_seconds.unwrap_or(3600);
 
