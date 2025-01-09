@@ -1,13 +1,14 @@
 use std::sync::Arc;
 
 use axum::{
-    Json,
+    Extension, Json,
     extract::{Path, State},
     http::StatusCode,
 };
 use serde::Serialize;
 
 use crate::{
+    api::response::TokenClaims,
     apperr::AppError,
     model::Post,
     services::post::{CreatePostRequest, PostService, UpdatePostRequest},
@@ -25,6 +26,7 @@ pub struct ListPostResponse {
 }
 
 pub async fn create(
+    Extension(_claims): Extension<TokenClaims>,
     State(state): State<Arc<ApplicationState>>,
     Json(payload): Json<CreatePostRequest>,
 ) -> Result<Json<SinglePostResponse>, AppError> {

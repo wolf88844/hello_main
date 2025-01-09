@@ -3,8 +3,9 @@ use std::sync::Arc;
 use crate::state::ApplicationState;
 
 use super::handlers;
-use axum::Router;
+use super::middleware::auth::auth;
 use axum::routing::{delete, get, post, put};
+use axum::{Router, middleware};
 pub fn configure(state: Arc<ApplicationState>) -> Router {
     Router::new()
         .route(
@@ -13,7 +14,9 @@ pub fn configure(state: Arc<ApplicationState>) -> Router {
         )
         .route(
             "/posts",
-            post(handlers::posts::create).with_state(state.clone()),
+            post(handlers::posts::create)
+                .with_state(state.clone())
+                .route_layer(middleware::from_fn_with_state(state.clone(), auth)),
         )
         .route(
             "/posts",
