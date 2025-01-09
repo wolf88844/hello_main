@@ -6,9 +6,13 @@ use axum::{
 };
 
 use crate::{
-    api::request::CreateUserRequest, api::request::UpdateUserRequest,
-    api::response::ListUserResponse, api::response::SingleUserResponse, apperr::AppError,
-    model::User, services::user::UserService, state::ApplicationState,
+    api::{
+        request::user::{CreateUserRequest, UpdateUserRequest},
+        response::user::{ListUserResponse, SingleUserResponse},
+    },
+    apperr::AppError,
+    services::user::UserService,
+    state::ApplicationState,
 };
 
 #[utoipa::path(

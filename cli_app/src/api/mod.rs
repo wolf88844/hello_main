@@ -1,8 +1,9 @@
 use std::sync::Arc;
 
-use axum::Router;
-
 use crate::state::ApplicationState;
+use axum::Router;
+use utoipa::OpenApi;
+use utoipa_swagger_ui::SwaggerUi;
 
 mod handlers;
 mod middleware;

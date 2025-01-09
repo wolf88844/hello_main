@@ -1,12 +1,10 @@
 use std::collections::HashMap;
 
-use serde::{Deserialize, Serialize};
 use sqlx::{Pool, Postgres};
 use tokio::sync::Mutex;
 
-use crate::api::request::{CreateUserRequest, UpdateUserRequest};
-use crate::api::response::{ListUserResponse, SingleUserResponse};
 use crate::{
+    api::request::user::{CreateUserRequest, UpdateUserRequest},
     model::{User, UserStatus},
     utils::password,
 };

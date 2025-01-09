@@ -1,12 +1,12 @@
 use std::collections::HashMap;
 
-use serde::{Deserialize, Serialize};
 use sqlx::{Pool, Postgres};
 use tokio::sync::Mutex;
 
-use crate::api::request::{CreatePostRequest, UpdatePostRequest};
-use crate::api::response::{ListPostResponse, SinglePostResponse};
-use crate::model::{Post, PostStatus};
+use crate::{
+    api::request::post::{CreatePostRequest, UpdatePostRequest},
+    model::{Post, PostStatus},
+};
 
 pub struct InMemoryPostStore {
     pub counter: i64,

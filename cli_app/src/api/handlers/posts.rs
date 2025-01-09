@@ -7,9 +7,16 @@ use axum::{
 };
 
 use crate::{
-    api::request::CreatePostRequest, api::request::UpdatePostRequest,
-    api::response::ListPostResponse, api::response::SinglePostResponse, api::response::TokenClaims,
-    apperr::AppError, model::Post, services::post::PostService, state::ApplicationState,
+    api::{
+        request::post::{CreatePostRequest, UpdatePostRequest},
+        response::{
+            TokenClaims,
+            post::{ListPostResponse, SinglePostResponse},
+        },
+    },
+    apperr::AppError,
+    services::post::PostService,
+    state::ApplicationState,
 };
 
 #[utoipa::path(

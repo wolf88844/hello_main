@@ -89,16 +89,16 @@ pub fn configure(state: Arc<ApplicationState>) -> Router {
     ),
     components(
         schemas(
-            crate::request::post::CreatePostRequest,
-            crate::response::post::ListPostResponse,
-            crate::response::post::SinglePostResponse,
-            crate::request::post::CreatePostRequest,
-            crate::request::user::CreateUserRequest,
-            crate::response::user::ListUserResponse,
-            crate::response::user::SingleUserResponse,
-            crate::request::user::UpdateUserRequest,
-            crate::request::login::LoginRequest,
-            crate::response::login::LoginResponse,
+            crate::api::request::post::CreatePostRequest,
+            crate::api::response::post::ListPostResponse,
+            crate::api::response::post::SinglePostResponse,
+            crate::api::request::post::CreatePostRequest,
+            crate::api::request::user::CreateUserRequest,
+            crate::api::response::user::ListUserResponse,
+            crate::api::response::user::SingleUserResponse,
+            crate::api::request::user::UpdateUserRequest,
+            crate::api::request::login::LoginRequest,
+            crate::api::response::login::LoginResponse,
         )
     ),
     tags(
