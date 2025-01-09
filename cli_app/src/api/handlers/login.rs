@@ -22,8 +22,7 @@ use crate::utils::password;
         (status = 200, description = "Login successful", body = LoginResponse),
         (status = 401, description = "Invalid credentials",),
     ),
-    tag = "Auth",
-    operation_id = "login",
+    tag = "Login",
     security(
         ("api_key" = []),
     ),

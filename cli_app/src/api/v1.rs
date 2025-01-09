@@ -102,13 +102,13 @@ pub fn configure(state: Arc<ApplicationState>) -> Router {
         )
     ),
     tags(
-        (name="hello",description="hello world"),
-        (name="posts",description="posts api"),
-        (name="users",description="users api"),
-        (name="login",description="login api"),
+        (name="Hello",description="hello world"),
+        (name="Posts",description="posts api"),
+        (name="Users",description="users api"),
+        (name="Login",description="login api"),
     ),
     servers(
-        (url="/v1",description="v1")
+        (url="/v1",description="v1版本")
     ),
 )]
 pub struct ApiDoc;
