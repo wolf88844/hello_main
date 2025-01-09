@@ -1,9 +1,10 @@
 use std::collections::HashMap;
 
 use serde::{Deserialize, Serialize};
+use sqlx::{Pool, Postgres};
 use tokio::sync::Mutex;
 
-use crate::model::{Post, PostStatue};
+use crate::model::{Post, PostStatus};
 
 pub struct InMemoryPostStore {
     pub counter: i64,
@@ -25,13 +26,23 @@ impl Default for InMemoryPostService {
     }
 }
 
+pub struct PgSqlPostService {
+    pub pool: Pool<Postgres>,
+}
+
+impl PgSqlPostService {
+    pub fn new(pool: Pool<Postgres>) -> Self {
+        Self { pool }
+    }
+}
+
 #[derive(Serialize, Deserialize)]
 pub struct CreatePostRequest {
     pub author_id: i64,
     pub title: String,
     pub slug: String,
     pub content: String,
-    pub statue: PostStatue,
+    pub status: PostStatus,
 }
 
 #[derive(Serialize, Deserialize)]
@@ -41,7 +52,7 @@ pub struct UpdatePostRequest {
     pub title: String,
     pub slug: String,
     pub content: String,
-    pub statue: PostStatue,
+    pub status: PostStatus,
 }
 
 #[allow(async_fn_in_trait)]
@@ -88,7 +99,7 @@ impl PostService for InMemoryPostService {
             title: req.title,
             slug: req.slug,
             content: req.content,
-            statue: req.statue,
+            status: req.status,
             created: ts,
             updated: ts,
         };
@@ -108,7 +119,7 @@ impl PostService for InMemoryPostService {
         post.slug = req.slug;
         post.title = req.title;
         post.content = req.content;
-        post.statue = req.statue;
+        post.status = req.status;
 
         match data.items.get(&data.counter) {
             None => {
@@ -124,5 +135,136 @@ impl PostService for InMemoryPostService {
             Some(_) => Ok(()),
             None => Err(anyhow::anyhow!("Post not found: {}", id)),
         }
+    }
+}
+
+impl PostService for PgSqlPostService {
+    async fn get_all_posts(&self) -> anyhow::Result<Vec<Post>> {
+        let res = sqlx::query!(
+            r#"
+            SELECT id, author_id, title, slug, content, status, created, updated
+            FROM posts
+            "#,
+        )
+        .fetch_all(&self.pool)
+        .await?;
+        let list = res
+            .into_iter()
+            .map(|row| Post {
+                id: row.id,
+                author_id: row.author_id,
+                title: row.title,
+                slug: row.slug,
+                content: row.content,
+                status: PostStatus::from(row.status),
+                created: row.created.unwrap_or_default(),
+                updated: row.updated.unwrap_or_default(),
+            })
+            .collect();
+
+        Ok(list)
+    }
+
+    async fn get_post_by_id(&self, id: i64) -> anyhow::Result<Post> {
+        let res = sqlx::query!(
+            r#"
+            SELECT id, author_id,title, slug, content, status, created, updated
+            FROM posts
+            WHERE id = $1
+            "#,
+            id
+        );
+        res.fetch_one(&self.pool)
+            .await
+            .map(|row| Post {
+                id: row.id,
+                author_id: row.author_id,
+                title: row.title,
+                slug: row.slug,
+                content: row.content,
+                status: PostStatus::from(row.status),
+                created: row.created.unwrap_or_default(),
+                updated: row.updated.unwrap_or_default(),
+            })
+            .map_err(|e| anyhow::anyhow!(e).context(format!("Post not found: {}", id)))
+    }
+
+    async fn get_post_by_slug(&self, name: &str) -> anyhow::Result<Post> {
+        let res = sqlx::query!(
+            r#"
+            SELECT id, author_id,title, slug, content, status, created, updated
+            FROM posts
+            WHERE slug = $1
+            "#,
+            name
+        );
+        res.fetch_one(&self.pool)
+            .await
+            .map(|row| Post {
+                id: row.id,
+                author_id: row.author_id,
+                title: row.title,
+                slug: row.slug,
+                content: row.content,
+                status: PostStatus::from(row.status),
+                created: row.created.unwrap_or_default(),
+                updated: row.updated.unwrap_or_default(),
+            })
+            .map_err(|e| anyhow::anyhow!(e).context(format!("Post not found: {}", name)))
+    }
+
+    async fn create_post(&self, req: CreatePostRequest) -> anyhow::Result<Post> {
+        let res = sqlx::query!(
+            r#"
+            INSERT INTO posts (author_id, title, slug, content, status, created, updated)
+            VALUES ($1, $2, $3, $4, $5, NOW(), NOW())   
+            RETURNING id
+            "#,
+            req.author_id,
+            req.title,
+            req.slug,
+            req.content,
+            i32::from(req.status),
+        );
+        let res = res.fetch_one(&self.pool).await?;
+        let id = res.id;
+        self.get_post_by_id(id).await
+    }
+
+    async fn update_post(&self, id: i64, req: UpdatePostRequest) -> anyhow::Result<Post> {
+        match self.get_post_by_id(id).await {
+            Ok(_post) => {
+                let res = sqlx::query!(
+                    r#"
+                    UPDATE posts
+                    SET author_id = $1, title = $2, slug = $3, content = $4, status = $5, updated = NOW()
+                    WHERE id = $6
+                    "#,
+                    req.author_id,
+                    req.title,
+                    req.slug,
+                    req.content,
+                    i32::from(req.status),
+                    id
+                );
+                res.execute(&self.pool).await?;
+                self.get_post_by_id(id).await
+            }
+            Err(_) => {
+                anyhow::bail!("Post not found: {}", id);
+            }
+        }
+    }
+
+    async fn delete_post(&self, id: i64) -> anyhow::Result<()> {
+        let res = sqlx::query!(
+            r#"
+            DELETE FROM posts
+            WHERE id = $1
+            "#,
+            id
+        );
+        res.execute(&self.pool).await?;
+        Ok(())
     }
 }

@@ -27,12 +27,12 @@ impl From<UserStatus> for i32 {
 }
 
 #[derive(Copy, Clone, Serialize, Deserialize)]
-pub enum PostStatue {
+pub enum PostStatus {
     Draft = 1,
     Published = 2,
 }
 
-impl From<i32> for PostStatue {
+impl From<i32> for PostStatus {
     fn from(value: i32) -> Self {
         match value {
             1 => Self::Draft,
@@ -42,11 +42,11 @@ impl From<i32> for PostStatue {
     }
 }
 
-impl From<PostStatue> for i32 {
-    fn from(value: PostStatue) -> Self {
+impl From<PostStatus> for i32 {
+    fn from(value: PostStatus) -> Self {
         match value {
-            PostStatue::Draft => 1,
-            PostStatue::Published => 2,
+            PostStatus::Draft => 1,
+            PostStatus::Published => 2,
         }
     }
 }
@@ -68,7 +68,7 @@ pub struct Post {
     pub slug: String,
     pub title: String,
     pub content: String,
-    pub statue: PostStatue,
+    pub status: PostStatus,
     pub created: DateTime<Utc>,
     pub updated: DateTime<Utc>,
 }
