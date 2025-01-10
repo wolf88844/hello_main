@@ -99,7 +99,7 @@ impl UserService for InMemoryUserService {
         let mut data = self.data.lock().await;
         let user = data.items.get_mut(&id).unwrap();
 
-        let last_login = user.last_login.clone();
+        let last_login = user.last_login;
 
         user.username = request.username;
         user.password = password::encrypt_password(&request.password)?;
@@ -135,7 +135,7 @@ impl UserService for PgSqlUserService {
             .map(|rows| {
                 rows.into_iter()
                     .map(|row| User {
-                        id: row.id as i64,
+                        id: row.id,
                         username: row.username,
                         password: row.password,
                         status: UserStatus::from(row.status),
@@ -160,7 +160,7 @@ impl UserService for PgSqlUserService {
         res.fetch_one(&self.pool)
             .await
             .map(|row| User {
-                id: row.id as i64,
+                id: row.id,
                 username: row.username,
                 password: row.password,
                 status: UserStatus::from(row.status),
@@ -183,7 +183,7 @@ impl UserService for PgSqlUserService {
         res.fetch_one(&self.pool)
             .await
             .map(|row| User {
-                id: row.id as i64,
+                id: row.id,
                 username: row.username,
                 password: row.password,
                 status: UserStatus::from(row.status),
