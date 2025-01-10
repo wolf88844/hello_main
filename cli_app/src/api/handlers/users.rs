@@ -4,6 +4,7 @@ use axum::{
     Json,
     extract::{Path, State},
 };
+use utoipa::OpenApi;
 
 use crate::{
     api::{
@@ -15,6 +16,32 @@ use crate::{
     state::ApplicationState,
 };
 
+#[derive(OpenApi)]
+#[openapi(
+    paths(
+        create,
+        list,
+        get,
+        get_by_username,
+        update,
+        delete,
+    ),
+    components(
+        schemas(
+            CreateUserRequest,
+            UpdateUserRequest,
+            ListUserResponse,
+            SingleUserResponse,
+        ),
+    ),
+    tags(
+        (name = "Users", description = "User management operations"),
+    )
+)]
+pub struct UsersApi;
+
+
+
 #[utoipa::path(
     post,
     path = "/users",
@@ -24,7 +51,7 @@ use crate::{
         (status = 400, description = "Bad request", body = AppError),
         (status = 500, description = "Internal server error", body = AppError),
     ),
-    tag="Users"
+    tag= "Users",
 )]
 pub async fn create(
     State(state): State<Arc<ApplicationState>>,
@@ -60,6 +87,9 @@ pub async fn list(
         (status = 404, description = "User not found", body = AppError),
         (status = 500, description = "Internal server error", body = AppError),
     ),
+    params(
+        ("id" = i64, Path, description = "User ID"),
+    ),
     tag="Users"
 )]
 pub async fn get(
@@ -78,11 +108,14 @@ pub async fn get(
 
 #[utoipa::path(
     get,
-    path = "/users/username/{username}",
+    path = "/users/name/{username}",
     responses(
         (status = 200, description = "User found", body = SingleUserResponse),
         (status = 404, description = "User not found", body = AppError),
         (status = 500, description = "Internal server error", body = AppError),
+    ),
+    params(
+        ("username" = String, Path, description = "User username"),
     ),
     tag="Users"
 )]
@@ -110,6 +143,9 @@ pub async fn get_by_username(
         (status = 404, description = "User not found", body = AppError),
         (status = 500, description = "Internal server error", body = AppError),
     ),
+    params(
+        ("id" = i64, Path, description = "User ID"),
+    ),
     tag= "Users",
 )]
 pub async fn update(
@@ -129,6 +165,9 @@ pub async fn update(
         (status = 200, description = "User deleted successfully"),
         (status = 404, description = "User not found", body = AppError),
         (status = 500, description = "Internal server error", body = AppError),
+    ),
+    params(
+        ("id" = i64, Path, description = "User ID"),
     ),
     tag= "Users",
 )]

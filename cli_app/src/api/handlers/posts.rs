@@ -50,6 +50,9 @@ pub async fn create(
         (status = 401, description = "Unauthorized", body = AppError),
         (status =404, description = "Post not found", body = AppError),
     ),
+    params(
+        ("id"=i64, Path, description = "Post ID"),
+    ),
     tag = "Posts",
 
 )]
@@ -88,6 +91,9 @@ pub async fn list(
         (status = 200, description = "Post found", body = SinglePostResponse),
         (status = 404, description = "Post not found", body = AppError),
     ),
+    params(
+        ("id"=i64, Path, description = "Post ID"),
+    ),
     tag= "Posts",
 )]
 pub async fn get(
@@ -111,6 +117,9 @@ pub async fn get(
         (status = 200, description = "Post found", body = SinglePostResponse),
         (status = 404, description = "Post not found", body = AppError),
     ),
+    params(
+        ("name"=String, Path, description = "Post Slug"),
+    ),
     tag= "Posts",
 )]
 pub async fn get_by_slug(
@@ -133,6 +142,9 @@ pub async fn get_by_slug(
     responses(
         (status = 200, description = "Post deleted successfully"),
         (status = 404, description = "Post not found", body = AppError),
+    ),
+    params(
+        ("id"=i64, Path, description = "Post ID"),
     ),
     tag= "Posts",
 )]

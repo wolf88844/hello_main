@@ -81,8 +81,8 @@ fn start_tokio(port: u16, settings: &Settings) -> anyhow::Result<()> {
             // 创建一个新的应用程序状态
             let state = Arc::new(ApplicationState::new(settings, pool)?);
             // 配置应用程序的路由
-            let router = crate::api::configure(state).layer(TraceLayer::new_for_http());
-            // 创建一个新的套接字地址
+            let router = crate::api::configure(state)
+            .layer(TraceLayer::new_for_http());            // 创建一个新的套接字地址
             let addr = SocketAddr::new(IpAddr::V4(Ipv4Addr::new(0, 0, 0, 0)), port);
             // 绑定到套接字地址并监听
             let listener = tokio::net::TcpListener::bind(addr).await?;

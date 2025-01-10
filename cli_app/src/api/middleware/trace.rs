@@ -1,23 +1,13 @@
-use std::{sync::Arc, time};
+use std::time;
 
-use axum::{
-    body::Body,
-    extract::{Request, State},
-    middleware::Next,
-    response::IntoResponse,
-};
+use axum::{body::Body, extract::Request, middleware::Next, response::IntoResponse};
 use tower_http::trace::{
     DefaultMakeSpan, DefaultOnRequest, DefaultOnResponse, MakeSpan, OnRequest, OnResponse,
 };
 use tracing::Level;
 
-use crate::{apperr::AppError, state::ApplicationState};
-
-pub async fn trace(
-    State(_state): State<Arc<ApplicationState>>,
-    req: Request<Body>,
-    next: Next,
-) -> Result<impl IntoResponse, AppError> {
+use crate::apperr::AppError;
+pub async fn trace(req: Request<Body>, next: Next) -> Result<impl IntoResponse, AppError> {
     let span = DefaultMakeSpan::new().include_headers(true).make_span(&req);
 
     let _entered = span.enter();

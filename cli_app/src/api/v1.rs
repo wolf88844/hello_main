@@ -4,7 +4,6 @@ use crate::state::ApplicationState;
 
 use super::handlers;
 use super::middleware::auth::auth;
-use super::middleware::trace::trace;
 use axum::routing::{delete, get, post, put};
 use axum::{Router, middleware};
 use utoipa::OpenApi;
@@ -22,9 +21,7 @@ pub fn configure(state: Arc<ApplicationState>) -> Router {
         )
         .route(
             "/posts",
-            get(handlers::posts::list)
-                .with_state(state.clone())
-                .route_layer(middleware::from_fn_with_state(state.clone(), trace)),
+            get(handlers::posts::list).with_state(state.clone()),
         )
         .route(
             "/posts/{id}",
@@ -72,6 +69,9 @@ pub fn configure(state: Arc<ApplicationState>) -> Router {
 
 #[derive(OpenApi)]
 #[openapi(
+    nest(
+        (path="/",api=handlers::users::UsersApi),
+    ),
     paths(
         handlers::hello::hello,
         handlers::posts::create,
@@ -80,11 +80,6 @@ pub fn configure(state: Arc<ApplicationState>) -> Router {
         handlers::posts::get_by_slug,
         handlers::posts::update,
         handlers::posts::delete,
-        handlers::users::create,
-        handlers::users::list,
-        handlers::users::get,
-        handlers::users::update,
-        handlers::users::delete,
         handlers::login::login,
     ),
     components(
@@ -93,10 +88,6 @@ pub fn configure(state: Arc<ApplicationState>) -> Router {
             crate::api::response::post::ListPostResponse,
             crate::api::response::post::SinglePostResponse,
             crate::api::request::post::CreatePostRequest,
-            crate::api::request::user::CreateUserRequest,
-            crate::api::response::user::ListUserResponse,
-            crate::api::response::user::SingleUserResponse,
-            crate::api::request::user::UpdateUserRequest,
             crate::api::request::login::LoginRequest,
             crate::api::response::login::LoginResponse,
         )
@@ -104,7 +95,6 @@ pub fn configure(state: Arc<ApplicationState>) -> Router {
     tags(
         (name="Hello",description="hello world"),
         (name="Posts",description="posts api"),
-        (name="Users",description="users api"),
         (name="Login",description="login api"),
     ),
     servers(
