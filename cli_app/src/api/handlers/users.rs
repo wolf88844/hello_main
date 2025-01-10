@@ -44,7 +44,7 @@ pub struct UsersApi;
 
 #[utoipa::path(
     post,
-    path = "/users",
+    path = "",
     request_body = CreateUserRequest,
     responses(
         (status = 200, description = "User created successfully", body = SingleUserResponse),
@@ -64,7 +64,7 @@ pub async fn create(
 
 #[utoipa::path(
     get,
-    path = "/users",
+    path = "",
     responses(
         (status = 200, description = "List of users", body = ListUserResponse),
         (status = 500, description = "Internal server error", body = AppError),
@@ -81,7 +81,7 @@ pub async fn list(
 
 #[utoipa::path(
     get,
-    path = "/users/{id}",
+    path = "/{id}",
     responses(
         (status = 200, description = "User found", body = SingleUserResponse),
         (status = 404, description = "User not found", body = AppError),
@@ -108,7 +108,7 @@ pub async fn get(
 
 #[utoipa::path(
     get,
-    path = "/users/name/{username}",
+    path = "/name/{username}",
     responses(
         (status = 200, description = "User found", body = SingleUserResponse),
         (status = 404, description = "User not found", body = AppError),
@@ -135,7 +135,7 @@ pub async fn get_by_username(
 
 #[utoipa::path(
     put,
-    path = "/users/{id}",
+    path = "/{id}",
     request_body = UpdateUserRequest,
     responses(
         (status = 200, description = "User updated successfully", body = SingleUserResponse),
@@ -160,7 +160,7 @@ pub async fn update(
 
 #[utoipa::path(
     delete,
-    path = "/users/{id}",
+    path = "/{id}",
     responses(
         (status = 200, description = "User deleted successfully"),
         (status = 404, description = "User not found", body = AppError),

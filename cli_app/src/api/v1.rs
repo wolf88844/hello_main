@@ -70,7 +70,7 @@ pub fn configure(state: Arc<ApplicationState>) -> Router {
 #[derive(OpenApi)]
 #[openapi(
     nest(
-        (path="/",api=handlers::users::UsersApi),
+        (path="/users",api=handlers::users::UsersApi),
     ),
     paths(
         handlers::hello::hello,

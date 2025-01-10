@@ -18,4 +18,5 @@ pub fn configure(state: Arc<ApplicationState>) -> Router {
             crate::api::v1::ApiDoc::openapi(),
         ))
         .nest("/v1", v1::configure(state))
+        .layer(axum::middleware::from_fn(middleware::trace::trace))
 }
