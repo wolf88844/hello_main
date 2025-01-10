@@ -40,8 +40,6 @@ use crate::{
 )]
 pub struct UsersApi;
 
-
-
 #[utoipa::path(
     post,
     path = "",
